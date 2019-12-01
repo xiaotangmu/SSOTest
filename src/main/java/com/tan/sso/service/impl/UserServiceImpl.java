@@ -54,11 +54,7 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 			// 链接redis失败，查找数据库
-			UmsMember umsMemberFromDb = null;
-			List<UmsMember> selectByExample = userMapper.select(user);// 以非空字段作为查询条件
-			if (selectByExample != null) {
-				umsMemberFromDb = selectByExample.get(0);
-			}
+			UmsMember umsMemberFromDb = getUserByUserNameAndPwd(user);
 
 			if (umsMemberFromDb != null) {
 				jedis.setex("user:" + umsMemberFromDb.getUserName() + umsMemberFromDb.getPassword() + ":info",
@@ -69,16 +65,6 @@ public class UserServiceImpl implements UserService {
 			jedis.close();
 		}
 
-//		Example example = new Example(UmsMember.class);
-//		Criteria c1 = example.createCriteria();
-//		c1.andEqualTo("userName", user.getUserName());
-//		c1.andEqualTo("password", user.getPassword());
-//		List<UmsMember> selectByExample = userMapper.selectByExample(example);
-//		if(selectByExample != null) {
-//			return selectByExample.get(0);
-//		}
-//		
-//		return null;
 	}
 
 	@Override
@@ -89,5 +75,15 @@ public class UserServiceImpl implements UserService {
 		} finally {
 			jedis.close();
 		}
+	}
+	
+	public UmsMember getUserByUserNameAndPwd(UmsMember user){
+		
+		List<UmsMember> selectByExample = userMapper.select(user);// 以非空字段作为查询条件
+		if (selectByExample != null && selectByExample.size() > 0) {//没有不是null，是[]
+			return selectByExample.get(0);
+		}
+		return null;
+		
 	}
 }

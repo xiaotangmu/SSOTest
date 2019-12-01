@@ -13,7 +13,6 @@ import com.tan.sso.annotations.LoginRequired;
 import com.tan.sso.util.CookieUtil;
 import com.tan.sso.util.HttpclientUtil;
 
-import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,18 +20,20 @@ import java.util.Map;
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		// 拦截代码
-		// 判断被拦截的请求的访问的方法的注解(是否时需要拦截的)
-		HandlerMethod hm = (HandlerMethod) handler;
-		LoginRequired methodAnnotation = hm.getMethodAnnotation(LoginRequired.class);
+        // 拦截代码
+        // 判断被拦截的请求的访问的方法的注解(是否时需要拦截的)
+        HandlerMethod hm = (HandlerMethod) handler;
+        
+        LoginRequired methodAnnotation = hm.getMethodAnnotation(LoginRequired.class);
 
-		StringBuffer url = request.getRequestURL();
-		System.out.println(url);
+        StringBuffer url = request.getRequestURL();
+        System.out.println(url);
 
-		// 是否拦截
-		if (methodAnnotation == null) {
-			return true;// 没有加注解，放行
-		}
+        // 是否拦截
+        if (methodAnnotation == null) {
+            return true;
+        }
+
 
 		String token = "";
 
@@ -62,7 +63,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				}
 			}
 			String successJson = HttpclientUtil
-					.doGet("http://localhost:8082/verify?token=" + token + "&currentIp=" + ip);
+					.doGet("http://localhost:8082/sso/verify?token=" + token + "&currentIp=" + ip);
 
 			successMap = JSON.parseObject(successJson, Map.class);
 
@@ -75,7 +76,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			if (!success.equals("success")) {
 				// 重定向会passport登录
 				StringBuffer requestURL = request.getRequestURL();
-				response.sendRedirect("http://localhost:8082/index?ReturnUrl=" + requestURL);
+				response.sendRedirect("http://localhost:8082/sso/index?ReturnUrl=" + requestURL);
 				return false;
 			}
 

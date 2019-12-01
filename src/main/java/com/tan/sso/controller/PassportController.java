@@ -9,10 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.tan.sso.annotations.LoginRequired;
 import com.tan.sso.bean.UmsMember;
 import com.tan.sso.service.UserService;
 import com.tan.sso.util.JwtUtil;
@@ -120,7 +122,7 @@ public class PassportController {
 		return JSON.toJSONString(map);
 	}
 
-	@RequestMapping("login")
+	@PostMapping("login")
 	@ResponseBody
 	public String login(UmsMember umsMember, HttpServletRequest request) {
 
@@ -128,6 +130,7 @@ public class PassportController {
 
 		// 调用用户服务验证用户名和密码
 		UmsMember umsMemberLogin = userService.login(umsMember);
+		System.out.println(umsMemberLogin);
 
 		if (umsMemberLogin != null) {
 			// 登录成功
@@ -162,6 +165,7 @@ public class PassportController {
 	}
 
 	@RequestMapping("index")
+	@LoginRequired(loginSuccess = false)
 	public String index(String ReturnUrl, ModelMap map) {
 
 		map.put("ReturnUrl", ReturnUrl);
