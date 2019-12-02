@@ -113,8 +113,8 @@ public class PassportController {
 
 		if (decode != null) {
 			map.put("status", "success");
-			map.put("memberId", (String) decode.get("userId"));
-			map.put("nickname", (String) decode.get("userName"));
+			map.put("userId", (String) decode.get("userId"));
+			map.put("userName", (String) decode.get("userName"));
 		} else {
 			map.put("status", "fail");
 		}
@@ -137,10 +137,10 @@ public class PassportController {
 
 			// 用jwt制作token
 			String userId = umsMemberLogin.getId() + "";
-			String useName = umsMemberLogin.getUserName();
+			String userName = umsMemberLogin.getUserName();
 			Map<String, Object> userMap = new HashMap<>();
 			userMap.put("userId", userId);
-			userMap.put("useName", useName);
+			userMap.put("userName", userName);
 
 			String ip = request.getHeader("x-forwarded-for");// 通过nginx转发的客户端ip
 			if (StringUtils.isBlank(ip)) {
